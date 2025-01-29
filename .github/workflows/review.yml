@@ -90,7 +90,7 @@ jobs:
         if: ${{ matrix.system == 'x86_64-linux' || matrix.system == 'aarch64-linux' }}
 
       - name: install nix
-        uses: DeterminateSystems/nix-installer-action@v16
+        uses: cachix/install-nix-action@v27
 
       - name: install packages
         run: |
