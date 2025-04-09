@@ -68,6 +68,11 @@ on:
         required: true
         type: boolean
         default: false
+      extra-args:
+        description: "Extra args to nixpkgs-review"
+        required: false
+        default: ""
+        type: string
 
 jobs:
   review:
@@ -156,7 +161,7 @@ jobs:
             --no-shell \
             --no-headers \
             --print-result \
-            --build-args="-L" \
+            --build-args="-L" ${{ inputs.extra-args }} \
             || true
         env:
           GITHUB_TOKEN: ${{ github.token }}
