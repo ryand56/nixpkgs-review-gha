@@ -118,11 +118,6 @@ jobs:
       - name: install packages
         run: |
           pkgs=(coreutils nixpkgs-review jq gnused)
-          if [[ ${{ inputs.push-to-cache && vars.ATTIC_SERVER != '' && vars.ATTIC_CACHE != '' }} = true ]]; then
-            pkgs+=(attic-client)
-          elif [[ ${{ inputs.push-to-cache && vars.CACHIX_CACHE != '' }} = true ]]; then
-            pkgs+=(cachix)
-          fi
           args=()
           for pkg in ${pkgs[@]}; do args+=("github:nixos/nixpkgs/nixos-unstable#$pkg"); done
           nix profile install ${args[@]}
