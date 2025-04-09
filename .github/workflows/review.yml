@@ -51,7 +51,7 @@ on:
         description: "Push to cache"
         required: true
         type: boolean
-        default: true
+        default: false
       upterm:
         description: "Start upterm session after nixpkgs-review"
         required: true
@@ -61,7 +61,7 @@ on:
         description: "Post Result"
         required: true
         type: boolean
-        default: true
+        default: false
       approve-on-success:
         description: "Approve PR on review success"
         required: true
