@@ -67,6 +67,11 @@ on:
         required: true
         type: boolean
         default: false
+      extra-args:
+        description: "Extra args to nixpkgs-review"
+        required: false
+        default: ""
+        type: string
 
 jobs:
   review:
