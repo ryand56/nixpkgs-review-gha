@@ -40,6 +40,21 @@ on:
           - yes_sandbox_false
           - yes_sandbox_relaxed
           - yes_sandbox_true
+      allow-unfree:
+        description: "sets NIXPKGS_ALLOW_UNFREE=1"
+        required: true
+        type: boolean
+        default: false
+      allow-insecure:
+        description: "sets NIXPKGS_ALLOW_INSECURE=1"
+        required: true
+        type: boolean
+        default: false
+      allow-broken:
+        description: "sets NIXPKGS_ALLOW_BROKEN=1"
+        required: true
+        type: boolean
+        default: false
       upterm:
         description: "Start upterm session after nix build"
         required: true
@@ -84,7 +99,11 @@ jobs:
             || 'true' }}
 
       - name: nix build
-        run: nix build --keep-going -L ${{ inputs.packages }}
+        env:
+          NIXPKGS_ALLOW_UNFREE: ${{ inputs.allow-unfree && '1' || '0' }}
+          NIXPKGS_ALLOW_INSECURE: ${{ inputs.allow-insecure && '1' || '0' }}
+          NIXPKGS_ALLOW_BROKEN: ${{ inputs.allow-broken && '1' || '0' }}
+        run: nix build --impure --keep-going -L ${{ inputs.packages }}
         if: ${{ inputs.packages != '' }}
 
       - name: start upterm session
