@@ -73,9 +73,9 @@ jobs:
         if: ${{ matrix.system == 'x86_64-linux' || matrix.system == 'aarch64-linux' }}
 
       - name: install nix
-        uses: DeterminateSystems/nix-installer-action@v16
+        uses: cachix/install-nix-action@v31
         with:
-          extra-conf: |
+          extra_nix_config: |
             sandbox = ${{
               (matrix.system == 'x86_64-darwin' && inputs.x86_64-darwin == 'yes_sandbox_false'
                 || matrix.system == 'aarch64-darwin' && inputs.aarch64-darwin == 'yes_sandbox_false') && 'false'
