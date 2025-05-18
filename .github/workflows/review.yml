@@ -200,7 +200,7 @@ jobs:
         with:
           limit-access-to-actor: true
 
-      - name: generate report
+      - name: output report
         id: report
         env:
           OS: ${{ runner.os }}
@@ -209,14 +209,16 @@ jobs:
             cat fetch_cmd
             echo fetch_cmd_${{ matrix.system }}=$(base64 -w0 fetch_cmd) >> "$GITHUB_OUTPUT"
           fi
-          dir=~/.cache/nixpkgs-review/pr-${PR_NUMBER}
-          if [ "$OS" != "Linux" ]; then
-            sandbox=$(nix config show sandbox)
-            sed -i '/^###/s/$/ (sandbox = '"$sandbox"')/' "$dir/report.md"
-          fi
-          cat $dir/report.md
-          report=$(jq -c '.+{$md}' $dir/report.json --rawfile md $dir/report.md | base64 -w0)
-          echo report_${{ matrix.system }}=$report >> "$GITHUB_OUTPUT"
+
+          pushd ~/.cache/nixpkgs-review/pr-${PR_NUMBER}
+            if [ "$OS" != "Linux" ]; then
+              sandbox=$(nix config show sandbox)
+              sed -i '/^###/s/$/ (sandbox = '"$sandbox"')/' report.md
+            fi
+            cat report.md
+            report=$(jq -c '.+{$md}' report.json --rawfile md report.md | base64 -w0)
+            echo report_${{ matrix.system }}=$report >> "$GITHUB_OUTPUT"
+          popd
 
   report:
     runs-on: ubuntu-latest
