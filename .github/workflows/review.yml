@@ -151,9 +151,10 @@ jobs:
       - name: mention sandbox setting in report
         if: ${{ matrix.system == 'x86_64-darwin' || matrix.system == 'aarch64-darwin' }}
         run: |
-          dir=~/.cache/nixpkgs-review/pr-${PR_NUMBER}
+          pushd ~/.cache/nixpkgs-review/pr-${PR_NUMBER}
           sandbox=$(nix config show sandbox)
-          sed -i '/^###/s/$/ (sandbox = '"$sandbox"')/' $dir/report.md
+          sed -i '/^###/s/$/ (sandbox = '"$sandbox"')/' report.md
+          popd
 
       - name: output report
         id: report
@@ -162,9 +163,10 @@ jobs:
             cat fetch_cmd
             echo fetch_cmd_${{ matrix.system }}=$(base64 -w0 fetch_cmd) >> "$GITHUB_OUTPUT"
           fi
-          dir=~/.cache/nixpkgs-review/pr-${PR_NUMBER}
-          cat $dir/report.md
-          report=$(jq -c '.+{$md}' $dir/report.json --rawfile md $dir/report.md | base64 -w0)
+          pushd ~/.cache/nixpkgs-review/pr-${PR_NUMBER}
+          cat "$dir/report.md"
+          report=$(jq -c '.+{$md}' report.json --rawfile md report.md | base64 -w0)
+          popd
           echo report_${{ matrix.system }}=$report >> "$GITHUB_OUTPUT"
 
   report:
