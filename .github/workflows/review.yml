@@ -164,7 +164,7 @@ jobs:
             echo fetch_cmd_${{ matrix.system }}=$(base64 -w0 fetch_cmd) >> "$GITHUB_OUTPUT"
           fi
           pushd ~/.cache/nixpkgs-review/pr-${PR_NUMBER}
-          cat "$dir/report.md"
+          cat report.md
           report=$(jq -c '.+{$md}' report.json --rawfile md report.md | base64 -w0)
           popd
           echo report_${{ matrix.system }}=$report >> "$GITHUB_OUTPUT"
