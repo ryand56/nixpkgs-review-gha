@@ -57,7 +57,7 @@ on:
         description: "Post Result"
         required: true
         type: boolean
-        default: true
+        default: false
       approve-on-success:
         description: "Approve PR on review success"
         required: true
