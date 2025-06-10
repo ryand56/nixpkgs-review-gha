@@ -52,11 +52,6 @@ on:
         description: "nixpkgs-review extra args"
         required: false
         type: string
-      push-to-cache:
-        description: "Push to cache"
-        required: true
-        type: boolean
-        default: true
       upterm:
         description: "Start upterm session after nixpkgs-review"
         required: true
@@ -67,11 +62,6 @@ on:
         required: true
         type: boolean
         default: true
-      approve-on-success:
-        description: "Approve PR on review success"
-        required: true
-        type: boolean
-        default: false
 
 jobs:
   review:
@@ -250,15 +240,6 @@ jobs:
         run: |
           if [[ -n "$GH_TOKEN" ]]; then
             gh pr -R NixOS/nixpkgs comment ${PR_NUMBER} -F report.md
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-
-      - name: approve pull request
-        if: ${{ inputs.approve-on-success && needs.report.outputs.success == 'true' }}
-        run: |
-          if [[ -n "$GH_TOKEN" ]]; then
-            gh pr -R NixOS/nixpkgs review ${PR_NUMBER} --approve -b "Approved automatically following the successful run of \`nixpkgs-review\`." || true
           fi
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
