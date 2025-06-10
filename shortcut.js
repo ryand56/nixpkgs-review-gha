@@ -36,7 +36,8 @@ const setup = async () => {
     btn.innerText = "PR Tracker";
     actions.prepend(btn);
     btn.onclick = () => {
-      window.open(`https://nixpk.gs/pr-tracker.html?pr=${pr}`);
+      // window.open(`https://nixpk.gs/pr-tracker.html?pr=${pr}`);
+      window.open(`https://nixpkgs-tracker.ocfox.me/?pr=${pr}`);
     };
   }
 }
