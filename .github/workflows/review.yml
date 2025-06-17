@@ -130,6 +130,7 @@ jobs:
         run: |
           nixpkgs-review -- \
             pr ${PR_NUMBER} \
+            --eval ${{ inputs.local-eval && 'local' || 'auto' }} \
             --no-shell \
             --no-headers \
             --print-result \
