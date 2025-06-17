@@ -48,6 +48,10 @@ on:
          required: true
          type: boolean
          default: false
+      nixpkgs-config:
+        description: "Config for nixpkgs"
+        required: false
+        type: string
       extra-args:
         description: "nixpkgs-review extra args"
         required: false
@@ -129,7 +133,8 @@ jobs:
             --no-shell \
             --no-headers \
             --print-result \
-            --build-args="-L" \
+            --build-args="-L"
+            --extra-nixpkgs-config '{ ${{ inputs.nixpkgs-config }} }' \
             $EXTRA_ARGS \
             || true
         env:
