@@ -134,7 +134,7 @@ jobs:
             --no-shell \
             --no-headers \
             --print-result \
-            --build-args="-L"
+            --build-args="-L" \
             --extra-nixpkgs-config '{ ${{ inputs.nixpkgs-config }} }' \
             $EXTRA_ARGS \
             || true
