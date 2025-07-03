@@ -1,8 +1,6 @@
 name: build
 run-name: "build ${{ inputs.packages }}"
-
 permissions: {}
-
 on:
   workflow_dispatch:
     inputs:
@@ -60,7 +58,6 @@ on:
         required: true
         type: boolean
         default: false
-
 jobs:
   build:
     strategy:
@@ -77,16 +74,11 @@ jobs:
           - system: ${{ inputs.x86_64-darwin == 'no' && 'x86_64-darwin' || '' }}
           - system: ${{ inputs.aarch64-darwin == 'no' && 'aarch64-darwin' || '' }}
     runs-on: >-
-      ${{ (matrix.system == 'x86_64-linux' && 'ubuntu-latest')
-      || (matrix.system == 'aarch64-linux' && 'ubuntu-24.04-arm')
-      || (matrix.system == 'x86_64-darwin' && 'macos-13')
-      || (matrix.system == 'aarch64-darwin' && 'macos-latest') }}
-
+      ${{ (matrix.system == 'x86_64-linux' && 'ubuntu-latest') || (matrix.system == 'aarch64-linux' && 'ubuntu-24.04-arm') || (matrix.system == 'x86_64-darwin' && 'macos-13') || (matrix.system == 'aarch64-darwin' && 'macos-latest') }}
     steps:
       - name: prepare /nix
         run: sudo mkdir /mnt/nix && sudo mount -m -o bind /mnt/nix /nix
         if: ${{ matrix.system == 'x86_64-linux' || matrix.system == 'aarch64-linux' }}
-
       - name: install nix
         uses: cachix/install-nix-action@v31
         with:
@@ -97,7 +89,6 @@ jobs:
               || (matrix.system == 'x86_64-darwin' && inputs.x86_64-darwin == 'yes_sandbox_relaxed'
                 || matrix.system == 'aarch64-darwin' && inputs.aarch64-darwin == 'yes_sandbox_relaxed') && 'relaxed'
               || 'true' }}
-
       - name: nix build
         env:
           NIXPKGS_ALLOW_UNFREE: ${{ inputs.allow-unfree && '1' || '0' }}
@@ -105,7 +96,6 @@ jobs:
           NIXPKGS_ALLOW_BROKEN: ${{ inputs.allow-broken && '1' || '0' }}
         run: nix build --impure --keep-going -L ${{ inputs.packages }}
         if: ${{ inputs.packages != '' }}
-
       - name: start upterm session
         if: ${{ inputs.upterm }}
         uses: owenthereal/action-upterm@v1
