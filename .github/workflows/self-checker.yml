@@ -1,0 +1,18 @@
+name: self-check
+permissions: {}
+on:
+  pull_request_target:
+    types: [assigned, opened, synchronize, reopened]
+  push:
+    branches:
+      - 'main'
+jobs:
+  nix-ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: install nix
+        uses: cachix/install-nix-action@v31
+      - name: nix flake check
+        run: |
+          nix flake check -L
