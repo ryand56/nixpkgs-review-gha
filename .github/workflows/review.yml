@@ -149,7 +149,7 @@ jobs:
         env:
           OS: ${{ runner.os }}
   report:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     needs: [review]
     outputs:
       report: ${{ steps.report.outputs.report }}
@@ -208,7 +208,7 @@ jobs:
           REPORT_X86_64_DARWIN: ${{ needs.review.outputs.report_x86_64-darwin }}
           REPORT_AARCH64_DARWIN: ${{ needs.review.outputs.report_aarch64-darwin }}
   post-result:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     needs: [report]
     if: ${{ inputs.post-result }}
 
