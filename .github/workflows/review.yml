@@ -145,7 +145,7 @@ jobs:
             echo report_${{ matrix.system }}=$report >> "$GITHUB_OUTPUT"
           popd
   report:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     needs: [review]
     outputs:
       report: ${{ steps.report.outputs.report }}
