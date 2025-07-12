@@ -1,5 +1,4 @@
 name: setup-nix
-
 inputs:
   system:
     type: string
@@ -7,7 +6,6 @@ inputs:
   sandbox:
     type: string
     default: "true"
-
 runs:
   using: composite
   steps:
@@ -16,7 +14,6 @@ runs:
       uses: wimpysworld/nothing-but-nix@main
       with:
         hatchet-protocol: rampage
-
     - name: reclaim space (darwin)
       if: runner.os == 'macOS'
       shell: bash
@@ -42,7 +39,6 @@ runs:
           /Users/runner/Library/Caches \
           /Users/runner/Library/Developer/CoreSimulator \
           /Users/runner/hostedtoolcache &
-
     - name: install nix
       uses: cachix/install-nix-action@v31
       with:
@@ -51,11 +47,9 @@ runs:
           build-dir = /nix/build
           sandbox = ${{ inputs.sandbox }}
           system = ${{ inputs.system }}
-
     - name: create build-dir
       shell: bash
       run: sudo mkdir -p /nix/build
-
     - name: post setup-nix
       if: runner.os == 'macOS'
       uses: srz-zumix/post-run-action@v2
