@@ -40,6 +40,11 @@ on:
           - yes_sandbox_false
           - yes_sandbox_relaxed
           - yes_sandbox_true
+      allow-insecure:
+        description: 'Allow insecure packages?'
+        required: true
+        type: boolean
+        default: true
       extra-args:
         description: "nixpkgs-review extra args"
         required: false
@@ -120,6 +125,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           EXTRA_ARGS: ${{ inputs.extra-args }}
+          NIXPKGS_ALLOW_INSECURE: ${{ inputs.allow-insecure && '1' || '' }}
       - name: start upterm session
         if: ${{ inputs.upterm }}
         uses: owenthereal/action-upterm@v1
