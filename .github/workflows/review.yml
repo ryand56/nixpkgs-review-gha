@@ -217,7 +217,6 @@ jobs:
     runs-on: ubuntu-24.04-arm
     needs: [report]
     if: ${{ inputs.post-result }}
-
     steps:
       - name: fetch report
         run: echo ${REPORT} | base64 -d > report.md
