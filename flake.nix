@@ -27,7 +27,7 @@
 
     {
       overlays.nixpkgs-review = final: prev: {
-        inherit (nixpkgs-review.packages.${final.system}) nixpkgs-review;
+        inherit (nixpkgs-review.packages.${final.stdenv.hostPlatform.system}) nixpkgs-review;
       };
 
       legacyPackages = eachSystem lib.id;
@@ -46,7 +46,7 @@
         inherit (pkgs) nixpkgs-review;
         fmt = pkgs.runCommandNoCCLocal "fmt-check" { } ''
           cp -r --no-preserve=mode ${self} repo
-          ${lib.getExe self.formatter.${pkgs.system}} -C repo --ci
+          ${lib.getExe self.formatter.${pkgs.stdenv.hostPlatform.system}} -C repo --ci
           touch $out
         '';
       });
