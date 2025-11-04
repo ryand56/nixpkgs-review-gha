@@ -44,7 +44,7 @@
 
       checks = eachSystem (pkgs: {
         inherit (pkgs) nixpkgs-review;
-        fmt = pkgs.runCommandNoCCLocal "fmt-check" { } ''
+        fmt = pkgs.runCommand "fmt-check" { } ''
           cp -r --no-preserve=mode ${self} repo
           ${lib.getExe self.formatter.${pkgs.stdenv.hostPlatform.system}} -C repo --ci
           touch $out
