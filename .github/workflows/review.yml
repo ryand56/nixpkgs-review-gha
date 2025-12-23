@@ -83,6 +83,10 @@ jobs:
       author_id: ${{ steps.pr.outputs.author_id }}
 
     steps:
+      - name: display inputs
+        run: echo "$INPUTS"
+        env:
+          INPUTS: "${{ toJSON(github.event.inputs) }}"
       - name: get pr
         id: pr
         run: |
