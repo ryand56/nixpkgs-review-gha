@@ -58,7 +58,7 @@ const getPrDetails = pr => {
   );
   const labels = [...document.querySelectorAll("div.js-issue-labels > a")].map(x => x.innerText);
   const author = document.querySelector(".js-discussion > :first-child a.author").href.split("/").at(-1);
-  const self = document.querySelector("div.AppHeader-user button[data-login]").getAttribute("data-login");
+  const self = document.querySelector("header.GlobalNav button[data-login]").getAttribute("data-login");
   const authoredByMe = author === self;
   const hasLinuxRebuilds = !labels.some(l => /rebuild-linux: 0$/.test(l));
   const hasDarwinRebuilds = !labels.some(l => /rebuild-darwin: 0$/.test(l));
