@@ -14,7 +14,7 @@ Run [nixpkgs-review](https://github.com/Mic92/nixpkgs-review) in GitHub Actions
 ## Setup
 1. [Fork](https://github.com/Defelo/nixpkgs-review-gha/fork) this repository.
 2. In your fork, go to the [Actions](../../actions) tab and enable GitHub Actions workflows.
-3. If you don't want to set up [automatic self-updates](#automatic-self-updates-optional), please disable the `self-update` workflow ([Actions / `self-update`](../../actions/workflows/self-update.yml) > `...` button (top right corner) > `Disable workflow`).
+3. If you want to set up [automatic self-updates](#automatic-self-updates-optional), please enable the `self-update` workflow ([Actions / `self-update`](../../actions/workflows/self-update.yml) > `...` button (top right corner) > `Enable workflow`).
 
 ### Post Results / Auto Approve/Merge (optional)
 If you want nixpkgs-review-gha to automatically post the results on the reviewed pull requests or automatically mark them as ready for review or approve/merge them, you need to generate a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens):
