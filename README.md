@@ -53,7 +53,10 @@ extra-trusted-public-keys = nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq
 ```
 
 ### Shortcuts on nixpkgs PR pages (optional)
-Add [`shortcut.js`](shortcut.js) as a user script in your browser for `https://github.com/` for example using the [User JavaScript and CSS chrome extension](https://chromewebstore.google.com/detail/user-javascript-and-css/nbhcbdghjpllgmfilhnhkllmkecfmpld) or [Violentmonkey](https://violentmonkey.github.io/). Don't forget to update the `repo` constant at the top of the file to point to your fork.
+Add [`shortcut.user.js`](shortcut.user.js) as a user script in your browser for `https://github.com/` for example using the [User JavaScript and CSS chrome extension](https://chromewebstore.google.com/detail/user-javascript-and-css/nbhcbdghjpllgmfilhnhkllmkecfmpld) or [Violentmonkey](https://violentmonkey.github.io/). Don't forget to update the `repo` constant at the top of the file to point to your fork.
+
+> [!TIP]
+> Opening the [raw file](shortcut.user.js?raw=true) with Violetmonkey installed will prompt for installation.
 
 ## Usage
 1. Open the [review workflow in the "Actions" tab](../../actions/workflows/review.yml)
