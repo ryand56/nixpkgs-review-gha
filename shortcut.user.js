@@ -41,7 +41,9 @@ const query = async (doc, sel) => {
 };
 
 const getPrDetails = pr => {
-  const title = document.querySelector("bdi.js-issue-title.markdown-title").innerText;
+  const title = document.querySelector(
+    "div[data-component=TitleArea] .text-normal.markdown-title, bdi.js-issue-title.markdown-title",
+  ).innerText;
   const commits = [...document.querySelectorAll(".TimelineItem-body a.markdown-title[href*='/commits/']")].flatMap(
     ({ title, href }) => {
       const match = /\/NixOS\/nixpkgs\/pull\/(\d+)\/commits\/([0-9a-f]+)$/i.exec(href);
@@ -62,7 +64,10 @@ const getPrDetails = pr => {
   const authoredByMe = author === self;
   const hasLinuxRebuilds = !labels.some(l => /rebuild-linux: 0$/.test(l));
   const hasDarwinRebuilds = !labels.some(l => /rebuild-darwin: 0$/.test(l));
-  const state = document.querySelector("span.State").innerText.trim().toUpperCase();
+  const state = document
+    .querySelector("div[data-component=TitleArea] div[data-component=PH_LeadingVisual] span, span.State")
+    .innerText.trim()
+    .toUpperCase();
 
   return { title, commits, labels, author, authoredByMe, hasLinuxRebuilds, hasDarwinRebuilds, state };
 };
@@ -118,7 +123,7 @@ const setupPrPage = async () => {
   if (match === null) return;
 
   const pr = match[1];
-  const actions = await query(document, ".gh-header-show .gh-header-actions");
+  const actions = await query(document, "div[data-component=PH_Actions], .gh-header-show .gh-header-actions");
 
   if (actions.querySelector(".run-nixpkgs-review") === null) {
     const btn = document.createElement("button");
