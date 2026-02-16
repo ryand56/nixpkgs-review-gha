@@ -1,8 +1,6 @@
 name: review
 run-name: "review #${{ inputs.pr }}${{ inputs.extra-args && format(' ({0})', inputs.extra-args) || '' }}"
 
-permissions: {}
-
 env:
   PR_NUMBER: ${{ inputs.pr }}
 
@@ -129,6 +127,10 @@ jobs:
       || (matrix.system == 'x86_64-darwin' && 'macos-latest')
       || (matrix.system == 'aarch64-darwin' && 'macos-latest') }}
 
+    permissions:
+      contents: read
+      id-token: write
+
     steps:
       - uses: actions/checkout@v6
         with:
@@ -140,7 +142,10 @@ jobs:
       - name: setup nix
         uses: ./.github/actions/setup-nix
         with:
-          extra-nix-config: ${{ vars.EXTRA_NIX_CONFIG }}
+          extra-nix-config: |
+            extra-substituters = https://cache.ryand.ca
+            extra-trusted-public-keys = ryandcache:NslStLVVBcZlSx9i7HiyOKdQYgepTi6fg8NcDkHL14I=
+            ${{ vars.EXTRA_NIX_CONFIG }}
           system: ${{ matrix.system }}
           sandbox: ${{
             (matrix.system == 'x86_64-darwin' && inputs.x86_64-darwin == 'yes_sandbox_false'
@@ -152,12 +157,16 @@ jobs:
       - name: install packages
         run: |
           pkgs=(coreutils nixpkgs-review jq gnused)
-          if [[ ${{ inputs.push-to-cache && vars.ATTIC_SERVER != '' && vars.ATTIC_CACHE != '' }} = true ]]; then
-            pkgs+=(attic-client)
-          elif [[ ${{ inputs.push-to-cache && vars.CACHIX_CACHE != '' }} = true ]]; then
-            pkgs+=(cachix)
-          fi
           nix profile add "${pkgs[@]/#/.#}"
+
+      - name: Get OIDC token
+        id: oidc
+        if: ${{ inputs.push-to-cache }}
+        run: |
+          token=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=https://niks3.ryand.ca" | jq -r '.value')
+          echo "::add-mask::$token"
+          echo "token=$token" >> "$GITHUB_OUTPUT"
 
       - name: clone nixpkgs
         uses: actions/checkout@v6
@@ -184,52 +193,29 @@ jobs:
           PR_JSON: ${{ needs.prepare.outputs.pr }}
 
       - name: push results to cache
-        if: ${{ inputs.push-to-cache && ((vars.ATTIC_SERVER != '' && vars.ATTIC_CACHE != '') || vars.CACHIX_CACHE != '') }}
+        if: ${{ inputs.push-to-cache }}
         run: |
           set -ex
 
           (realpath -qe ~/.cache/nixpkgs-review/pr-${PR_NUMBER}/results/* || true) > paths
           [[ -s paths ]] || exit 0
 
-          if [[ ${{ vars.ATTIC_SERVER != '' && vars.ATTIC_CACHE != '' }} = true ]]; then
-            attic login default "$ATTIC_SERVER" "$ATTIC_TOKEN"
-            if ! attic cache info "$ATTIC_CACHE"; then
-              echo "::error::attic returned an error"
-              exit 0
-            fi
-            attic push --stdin "$ATTIC_CACHE" < paths
-            info=$(curl -f -H "Authorization: Bearer ${ATTIC_TOKEN}" "${ATTIC_SERVER}_api/v1/cache-config/${ATTIC_CACHE}")
-            substituter_endpoint=$(jq -r .substituter_endpoint <<< "$info")
-            public_key=$(jq -r .public_key <<< "$info")
-            is_public=$(jq -r .is_public <<< "$info")
-          elif [[ ${{ vars.CACHIX_CACHE != '' }} = true ]]; then
-            [[ -n "$CACHIX_SIGNING_KEY" ]] || unset CACHIX_SIGNING_KEY
-            cachix push "$CACHIX_CACHE" < paths
-            info=$(curl -f -H "Authorization: Bearer ${CACHIX_AUTH_TOKEN}" "https://app.cachix.org/api/v1/cache/${CACHIX_CACHE}")
-            substituter_endpoint=$(jq -r .uri <<< "$info")
-            public_key=$(jq -r '.publicSigningKeys[]' <<< "$info")
-            is_public=$(jq -r .isPublic <<< "$info")
-          fi
-
-          [[ "$is_public" = true ]] || exit 0
+          curl -fsSL "https://github.com/Mic92/niks3/releases/latest/download/niks3_$(uname -s)_$(uname -m).tar.gz" | tar -xzf -
+          ./niks3 push \
+            --server-url https://niks3.ryand.ca \
+            --auth-token "${{ steps.oidc.outputs.token }}" \
+            $(cat paths)
 
           echo "nix-store -r --add-root nixpkgs-pr-${PR_NUMBER}-${{ matrix.system }} \\" >> fetch_cmd
-          echo "  --option binary-caches 'https://cache.nixos.org/ $substituter_endpoint' \\" >> fetch_cmd
+          echo "  --option binary-caches 'https://cache.nixos.org/ https://cache.ryand.ca/' \\" >> fetch_cmd
           echo "  --option trusted-public-keys '" >> fetch_cmd
           echo "  cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=" >> fetch_cmd
-          echo "  $public_key" >> fetch_cmd
+          echo "  ryandcache:NslStLVVBcZlSx9i7HiyOKdQYgepTi6fg8NcDkHL14I=" >> fetch_cmd
           echo -n "  '" >> fetch_cmd
           for p in $(cat paths); do
             echo -e " \\" >> fetch_cmd
             echo -n "  $p" >> fetch_cmd
           done
-        env:
-          ATTIC_SERVER: ${{ vars.ATTIC_SERVER }}
-          ATTIC_CACHE: ${{ vars.ATTIC_CACHE }}
-          ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN }}
-          CACHIX_CACHE: ${{ vars.CACHIX_CACHE }}
-          CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
-          CACHIX_SIGNING_KEY: ${{ secrets.CACHIX_SIGNING_KEY }}
 
       - name: start upterm session
         if: ${{ inputs.upterm }}
