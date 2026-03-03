@@ -4,7 +4,9 @@
 // @run-at      document-idle
 // ==/UserScript==
 
-const repo = "Defelo/nixpkgs-review-gha";
+const user = document.querySelector("header.GlobalNav button[data-login]")?.getAttribute("data-login") ?? null;
+
+const repo = user ? `${user}/nixpkgs-review-gha` : null;
 
 const reviewDefaults = ({ title, commits, labels, author, authoredByMe, hasLinuxRebuilds, hasDarwinRebuilds }) => {
   const darwinSandbox = "relaxed";
@@ -60,8 +62,7 @@ const getPrDetails = pr => {
   );
   const labels = [...document.querySelectorAll("div.js-issue-labels > a")].map(x => x.innerText);
   const author = document.querySelector(".js-discussion > :first-child a.author").href.split("/").at(-1);
-  const self = document.querySelector("header.GlobalNav button[data-login]").getAttribute("data-login");
-  const authoredByMe = author === self;
+  const authoredByMe = author === user;
   const hasLinuxRebuilds = !labels.some(l => /rebuild-linux: 0$/.test(l));
   const hasDarwinRebuilds = !labels.some(l => /rebuild-darwin: 0$/.test(l));
   const state = document
@@ -125,7 +126,7 @@ const setupPrPage = async () => {
   const pr = match[1];
   const actions = await query(document, "div[data-component=PH_Actions], .gh-header-show .gh-header-actions");
 
-  if (actions.querySelector(".run-nixpkgs-review") === null) {
+  if (actions.querySelector(".run-nixpkgs-review") === null && repo) {
     const btn = document.createElement("button");
     btn.classList.add("Button", "Button--secondary", "Button--small", "run-nixpkgs-review");
     btn.innerText = "Run nixpkgs-review";
