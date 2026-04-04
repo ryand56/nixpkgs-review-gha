@@ -152,7 +152,7 @@ jobs:
         with:
           extra-nix-config: |
             extra-substituters = https://cache.ryand.ca
-            extra-trusted-public-keys = ryandcache:NslStLVVBcZlSx9i7HiyOKdQYgepTi6fg8NcDkHL14I=
+            extra-trusted-public-keys = ryandcache:H6aJbZCm8sAoMXCB9XbLAJb/ZamM6AY5Ns/QYGimOek=
             ${{ vars.EXTRA_NIX_CONFIG }}
           system: ${{ matrix.system }}
           sandbox: ${{
