@@ -1,6 +1,8 @@
 // ==UserScript==
 // @name        nixpkgs-review-gha
 // @match       https://github.com/*
+// @homepageURL https://github.com/Defelo/nixpkgs-review-gha
+// @downloadURL https://github.com/Defelo/nixpkgs-review-gha/raw/refs/heads/main/shortcut.user.js
 // @run-at      document-idle
 // ==/UserScript==
 
